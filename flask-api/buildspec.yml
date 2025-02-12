@@ -23,6 +23,7 @@ phases:
       - docker tag python-app:latest 024848451374.dkr.ecr.ap-south-1.amazonaws.com/python-app:latest
       - echo Pushing the Docker image to ECR...
       - docker push 024848451374.dkr.ecr.ap-south-1.amazonaws.com/python-app:latest
+      - echo '[{"name":"python-app","imageUri":"024848451374.dkr.ecr.ap-south-1.amazonaws.com/python-app:latest"}]' > imagedefinitions.json
 
 artifacts:
   files:
