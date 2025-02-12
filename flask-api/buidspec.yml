@@ -3,32 +3,31 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.8
+      docker: 18
     commands:
-      - echo Installing dependencies...
-      - python -m pip install --upgrade pip
-      - pip install -r requirements.txt
-      - echo Dependencies installed.
+      - echo Installing AWS CLI and Docker...
+      - aws --version
+      - docker --version
 
   pre_build:
     commands:
-      - echo Running pre-build checks...
-      - pytest tests/
-      - echo Pre-build completed.
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 024848451374.dkr.ecr.ap-south-1.amazonaws.com
 
   build:
     commands:
-      - echo Building the Flask app...
-      - python -m flask --app app.py run
-      - echo Build completed.
+      - echo Building the Docker image...
+      - docker build -t python-app .
 
   post_build:
     commands:
-      - echo Post-build steps...
-      - echo Build complete. You can now deploy the Flask app or package the artifact.
+      - echo Tagging the Docker image...
+      - docker tag python-app:latest 024848451374.dkr.ecr.ap-south-1.amazonaws.com/python-app:latest
+      - echo Pushing the Docker image to ECR...
+      - docker push 024848451374.dkr.ecr.ap-south-1.amazonaws.com/python-app:latest
 
 artifacts:
   files:
     - '**/*'
-    - app.py
-    - requirements.txt
+  discard-paths: yes
+
